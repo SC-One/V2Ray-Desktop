@@ -212,8 +212,8 @@ QJsonObject ServerConfigHelper::getV2RayServerConfigFromUrl(
   };
   QJsonObject rawServerConfig =
     QJsonDocument::fromJson(
-      QByteArray::fromBase64(server.mid(8).toUtf8(),
-                             QByteArray::AbortOnBase64DecodingErrors))
+      QByteArray::fromBase64(server.mid(8).toUtf8()/*,
+                             QByteArray::AbortOnBase64DecodingErrors*/))
       .object();
   QString network =
     rawServerConfig.contains("net") ? rawServerConfig["net"].toString() : "tcp";
@@ -222,11 +222,11 @@ QJsonObject ServerConfigHelper::getV2RayServerConfigFromUrl(
   QString serverPort = rawServerConfig["port"].isString()
                          ? rawServerConfig["port"].toString()
                          : QString::number(rawServerConfig["port"].toInt());
-  int alterId        = rawServerConfig.contains("aid")
-                         ? (rawServerConfig["aid"].isString()
-                              ? rawServerConfig["aid"].toString().toInt()
-                              : rawServerConfig["aid"].toInt())
-                         : 0;
+  int alterId = rawServerConfig.contains("aid")
+                  ? (rawServerConfig["aid"].isString()
+                       ? rawServerConfig["aid"].toString().toInt()
+                       : rawServerConfig["aid"].toInt())
+                  : 0;
 
   QJsonObject serverConfig{
     {"autoConnect", false},
@@ -353,7 +353,8 @@ QJsonObject ServerConfigHelper::getShadowsocksServerConfigFromUrl(
   int questionMarkIndex = serverUrl.indexOf('?');
 
   QString confidential = QByteArray::fromBase64(
-    serverUrl.left(atIndex).toUtf8(), QByteArray::AbortOnBase64DecodingErrors);
+    serverUrl.left(atIndex)
+      .toUtf8() /*, QByteArray::AbortOnBase64DecodingErrors*/);
   QString serverAddr = serverUrl.mid(atIndex + 1, colonIndex - atIndex - 1);
   QString serverPort = serverUrl.mid(
     colonIndex + 1, splashIndex != -1 ? (splashIndex - colonIndex - 1)
@@ -404,11 +405,11 @@ QJsonObject ServerConfigHelper::getShadowsocksRServerConfigFromUrl(
   QString server, const QString& subscriptionUrl) {
   server            = server.mid(6);
   QString serverUrl = QByteArray::fromBase64(
-    server.toUtf8(), QByteArray::AbortOnBase64DecodingErrors);
+    server.toUtf8() /*, QByteArray::AbortOnBase64DecodingErrors*/);
   // Failed to parse the SSR URL
   if (!serverUrl.size()) {
-    serverUrl = QByteArray::fromBase64(server.replace('_', '/').toUtf8(),
-                                       QByteArray::AbortOnBase64DecodingErrors);
+    serverUrl = QByteArray::fromBase64(server.replace('_', '/').toUtf8()/*,
+                                       QByteArray::AbortOnBase64DecodingErrors*/);
   }
   int sepIndex                   = serverUrl.indexOf("/?");
   QStringList essentialServerCfg = serverUrl.left(sepIndex).split(':');
@@ -608,9 +609,9 @@ QJsonObject ServerConfigHelper::getV2RayStreamSettingsFromConfig(
   QJsonObject _streamSettings =
     streamSettings.empty() ? transport : streamSettings;
   QJsonObject serverStreamSettings;
-  QString network                 = _streamSettings.contains("network")
-                                      ? _streamSettings["network"].toString()
-                                      : "tcp";
+  QString network = _streamSettings.contains("network")
+                      ? _streamSettings["network"].toString()
+                      : "tcp";
   serverStreamSettings["network"] = network;
   serverStreamSettings["networkSecurity"] =
     _streamSettings.contains("security")

@@ -44,10 +44,12 @@ void messageHandler(QtMsgType msgType,
     QFile logFile(Configurator::getAppLogFilePath());
     logFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream logTextStream(&logFile);
-    logTextStream << logMessage.arg(dt, msgTypeStr, msg) << Qt::endl;
+    logTextStream << logMessage.arg(dt, msgTypeStr, msg);
+    logTextStream.flush();
     logFile.close();
   } else {
-    QTextStream(stdout) << logMessage.arg(dt, msgTypeStr, msg) << Qt::endl;
+    QTextStream(stdout) << logMessage.arg(dt, msgTypeStr, msg);
+    QTextStream(stdout).flush();
   }
 }
 
